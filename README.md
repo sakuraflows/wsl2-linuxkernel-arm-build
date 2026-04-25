@@ -1,4 +1,4 @@
-#     wsl2-linuxkernel-arm-build for running Waydorid
+#     wsl2-linuxkernel-arm-build can running Waydorid
 #### WSL2（ARM）编译可运行Waydorid的WSL2（ARM）内核
 构建环境：
 CPU：高通8cX Gen3
