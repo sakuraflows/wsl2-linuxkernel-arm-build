@@ -1,5 +1,5 @@
-#     wsl2-linuxkernel-arm-build can running Waydorid
-#### WSL2（ARM）编译可运行Waydorid的WSL2（ARM）内核
+# wsl2-linuxkernel-arm-build can running waydroid
+#### WSL2（ARM）编译可运行waydroid的WSL2（ARM）内核
 构建环境：
 CPU：高通8cX Gen3
 编译系统环境：Windows 11 on Arm 25H2，WSL2 Ubuntu 24.04 
@@ -16,7 +16,7 @@ CPU：高通8cX Gen3
 `$ sudo apt install build-essential flex bison dwarves libssl-dev libelf-dev cpio qemu-utils`
 
 调整相关配置: 
-编译配置文件的路径是：`WSL2-Linux-Kernel-linux-msft-wsl-6.18.20.1/Microsoft/config-wsl-arm64`,因为我要后期在WSL上运行waydorid（waydorid可以让linux运行安卓程序，但运行waydorid必须要对内核进行配置，这也是我为什么要自己编译内核和模块的原因）
+编译配置文件的路径是：`WSL2-Linux-Kernel-linux-msft-wsl-6.18.20.1/Microsoft/config-wsl-arm64`,因为我要后期在WSL上运行waydroid（waydroid可以让linux运行安卓程序，但运行waydroid必须要对内核进行配置，这也是我为什么要自己编译内核和模块的原因）
 
 修改配置及修改后的结果如下：
 ```
