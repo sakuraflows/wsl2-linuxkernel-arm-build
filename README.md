@@ -2,7 +2,7 @@
 #### WSL2（ARM）编译可运行Waydorid的WSL2（ARM）内核
 构建环境：
 CPU：高通8cX Gen3
-编译系统环境：Windows 11 on Arm 25H2，WSL2 Ubuntu 24.04
+编译系统环境：Windows 11 on Arm 25H2，WSL2 Ubuntu 24.04 
 注意：本流程为原生ARM下的非交叉编译流程。 
 
 编译内核的版本：`WSL2-Linux-Kernel-linux-msft-wsl-6.18.20.1` 
