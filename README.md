@@ -2,12 +2,12 @@
 #### WSL2（ARM）编译可运行Waydorid的WSL2（ARM）内核
 构建环境：
 CPU：高通8cX Gen3
-系统环境：Windows 11 on Arm 25H2，WSL2 Ubuntu 24.04
+编译系统环境：Windows 11 on Arm 25H2，WSL2 Ubuntu 24.04
 注意：本流程为原生ARM下的非交叉编译流程。 
 
 编译内核的版本：`WSL2-Linux-Kernel-linux-msft-wsl-6.18.20.1` 
 架构：ARM64 
-#### 构建流程
+### 构建流程
 ##### 1 准备
 配置好基础环境：
 克隆此地址下的仓库：https://github.com/microsoft/WSL2-Linux-Kernel
@@ -52,9 +52,9 @@ Android Binderfs filesystem (ANDROID_BINDERFS) [N/y/?] (NEW)
 如果已经确定使用vhdx来加载模块，则可以执行官方指导中的`$ make clean & rm -r “$PWD/modules”`,否则只执行make clean即可。
 
 
-##### 4 简单的使用方法
+### 简单的使用方法
 以下方法比较简单，但我使用的是其他方法，所以不保证此部分的可行性  
-确保 WSL2 使用自定义内核和模块，方法是修改 .wslconfig 文件（或使用 WSL 设yixia置）。
+确保 WSL2 使用自定义内核和模块，方法是修改 .wslconfig 文件（或使用 WSL 设置）。
 
 ```
 [wsl2]
@@ -65,7 +65,7 @@ kernelModules=< your vhdx path>
 
 
 
-#### 参考：
+### 参考：
 - [Win11上配置Linux子系统+wsl-vscode](https://zhuanlan.zhihu.com/p/693938916) 
 - [025 完美避坑版：Windows 11 原生运行安卓 (Waydroid) 完整教程](https://gdfr.dpdns.org/waydroid-guide/) 
 - [Waydroid on WSL2](https://elkeid-me.github.io/posts/waydroid-on-wsl2) 
