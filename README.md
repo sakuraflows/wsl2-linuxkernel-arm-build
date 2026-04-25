@@ -1,79 +1,72 @@
-# Introduction
+#     wsl2-linuxkernel-arm-build for running Waydorid
+#### WSL2（ARM）编译可运行Waydorid的WSL2（ARM）内核
+构建环境：
+CPU：高通8cX Gen3
+系统环境：Windows 11 on Arm 25H2，WSL2 Ubuntu 24.04
+注意：本流程为原生ARM下的非交叉编译流程。 
 
-The [WSL2-Linux-Kernel][wsl2-kernel] repo contains the kernel source code and
-configuration files for the [WSL2][about-wsl2] kernel.
+编译内核的版本：`WSL2-Linux-Kernel-linux-msft-wsl-6.18.20.1` 
+架构：ARM64 
+#### 构建流程
+##### 1 准备
+配置好基础环境：
+克隆此地址下的仓库：https://github.com/microsoft/WSL2-Linux-Kernel
 
-# Reporting Bugs
+根据微软官方的指导，安装如下依赖：
+`$ sudo apt install build-essential flex bison dwarves libssl-dev libelf-dev cpio qemu-utils`
 
-If you discover an issue relating to WSL or the WSL2 kernel, please report it on
-the [WSL GitHub project][wsl-issue]. It is not possible to report issues on the
-[WSL2-Linux-Kernel][wsl2-kernel] project.
+调整相关配置: 
+编译配置文件的路径是：`WSL2-Linux-Kernel-linux-msft-wsl-6.18.20.1/Microsoft/config-wsl-arm64`,因为我要后期在WSL上运行waydorid（waydorid可以让linux运行安卓程序，但运行waydorid必须要对内核进行配置，这也是我为什么要自己编译内核和模块的原因）
 
-If you're able to determine that the bug is present in the upstream Linux
-kernel, you may want to work directly with the upstream developers. Please note
-that there are separate processes for reporting a [normal bug][normal-bug] and
-a [security bug][security-bug].
+修改配置及修改后的结果如下：
+```
+CONFIG_ANDROID_BINDER_IPC=y
+CONFIG_ANDROID_BINDER_DEVICES="binder,hwbinder,vndbinder"
+```
 
-# Feature Requests
+##### 2 构建与编译
+执行编译指令：
+`cd WSL2-Linux-Kernel-linux-msft-wsl-6.18.20.1 # your source code path` 
+`make ARCH=arm64 KCONFIG_CONFIG=Microsoft/config-wsl-arm64 -j$(nproc) && make ARCH=arm64 INSTALL_MOD_PATH="$PWD/modules" modules_install`
 
-Is there a missing feature that you'd like to see? Please request it on the
-[WSL GitHub project][wsl-issue].
+在编译过程中，可能会遇到如下提示：
+```
+* Restart config...
+*
+*
+* Android
+*
+Android Binder IPC Driver (ANDROID_BINDER_IPC) [Y/n/?] y
+Android Binderfs filesystem (ANDROID_BINDERFS) [N/y/?] (NEW)
+```
+建议选“y”
 
-If you're able and interested in contributing kernel code for your feature
-request, we encourage you to [submit the change upstream][submit-patch].
+大约一小时后会编译完成。
 
-# Build Instructions
+在编译完成后，可以根据需要利用源代码中提供的脚本将模块打包为VHDX文件： 
+`sudo ./Microsoft/scripts/gen_modules_vhdx.sh "$PWD/modules" $(make -s kernelrelease) modules.vhdx`
 
-Instructions for building an x86_64 WSL2 kernel with an Ubuntu distribution using bash are
-as follows:
 
-1. Install the build dependencies:  
-   `$ sudo apt install build-essential flex bison dwarves libssl-dev libelf-dev cpio qemu-utils`
+##### 3 执行清理：
+`make clean` 
+如果已经确定使用vhdx来加载模块，则可以执行官方指导中的`$ make clean & rm -r “$PWD/modules”`,否则只执行make clean即可。
 
-2. Modify WSL2 kernel configs (optional):  
-   `$ make menuconfig KCONFIG_CONFIG=Microsoft/config-wsl`
 
-3. Build the kernel using the WSL2 kernel configuration and put the modules in a `modules`
-   folder under the current working directory:  
-   `$ make KCONFIG_CONFIG=Microsoft/config-wsl && make INSTALL_MOD_PATH="$PWD/modules" modules_install`
-   
-   You may wish to include `-j$(nproc)` on the first `make` command to build in parallel.
+##### 4 简单的使用方法
+以下方法比较简单，但我使用的是其他方法，所以不保证此部分的可行性  
+确保 WSL2 使用自定义内核和模块，方法是修改 .wslconfig 文件（或使用 WSL 设yixia置）。
 
-Then, you can use a provided script to create a VHDX containing the modules:
-   `$ sudo ./Microsoft/scripts/gen_modules_vhdx.sh "$PWD/modules" $(make -s kernelrelease) modules.vhdx`
+```
+[wsl2]
+kernel=<your kernel path>
+kernelModules=< your vhdx path>
+```
+详见：[ Waydroid in WSL2 with sound](https://gist.github.com/onomatopellan/c5220c0efddaff69aaff77cca80b7b8e)
 
-To save space, you can now delete the compilation artifacts:
-   `$ make clean && rm -r "$PWD/modules"`
 
-If you prefer, you can also build the modules VHDX manually as follows:
 
-1. Calculate the modules size (plus 256MiB for slack):
-   `modules_size=$(du -bs "$PWD/modules" | awk '{print $1;}'); modules_size=$((modules_size + (256 * (1<<20))));`
-
-2. Create a blank image file for the modules:
-   `dd if=/dev/zero of="$PWD/modules.img" bs=1024 count=$((modules_size / 1024))`
-
-3. Setup filesystem and mount img file:
-   `lo_dev=$(sudo losetup --find --show "$PWD/modules.img") && sudo mkfs -t ext4 "$lo_dev" && mkdir "$PWD/modules_img" && sudo mount "$lo_dev" "$PWD/modules_img"`
-
-4. Copy over the modules, unmount the img now that we're done with it:
-   `sudo cp -r "$PWD/modules/lib/modules/$(make -s kernelrelease)"/* "$PWD/modules_img" && sudo umount "$PWD/modules_img"`
-
-5. Convert the img to VHDX:
-   `qemu-img convert -O vhdx "$PWD/modules.img" "$PWD/modules.vhdx"`
-
-6. Clean up:
-   `rm modules.img # optionally $PWD/modules dir and the now-empty $PWD_modules_img dir too`
-
-# Install Instructions
-
-Please see the documentation on the [.wslconfig configuration
-file][install-inst] for information on using a custom built kernel.
-
-[wsl2-kernel]:  https://github.com/microsoft/WSL2-Linux-Kernel
-[about-wsl2]:   https://docs.microsoft.com/en-us/windows/wsl/about#what-is-wsl-2
-[wsl-issue]:    https://github.com/microsoft/WSL/issues/new/choose
-[normal-bug]:   https://www.kernel.org/doc/html/latest/admin-guide/bug-hunting.html#reporting-the-bug
-[security-bug]: https://www.kernel.org/doc/html/latest/admin-guide/security-bugs.html
-[submit-patch]: https://www.kernel.org/doc/html/latest/process/submitting-patches.html
-[install-inst]: https://docs.microsoft.com/en-us/windows/wsl/wsl-config#configure-global-options-with-wslconfig
+#### 参考：
+- [Win11上配置Linux子系统+wsl-vscode](https://zhuanlan.zhihu.com/p/693938916) 
+- [025 完美避坑版：Windows 11 原生运行安卓 (Waydroid) 完整教程](https://gdfr.dpdns.org/waydroid-guide/) 
+- [Waydroid on WSL2](https://elkeid-me.github.io/posts/waydroid-on-wsl2) 
+- [ Waydroid in WSL2 with sound](https://gist.github.com/onomatopellan/c5220c0efddaff69aaff77cca80b7b8e) 
