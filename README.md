@@ -47,15 +47,23 @@ Android Binderfs filesystem (ANDROID_BINDERFS) [N/y/?] (NEW)
 `sudo ./Microsoft/scripts/gen_modules_vhdx.sh "$PWD/modules" $(make -s kernelrelease) modules.vhdx`
 
 
-##### 3 执行清理：
+##### 3 导出文件
+分别将如下两个文件导出
+- `arch/arm64/boot/Image`
+- `modules.vhdx`
+
+##### 4 执行清理：
 `make clean` 
 如果已经确定使用vhdx来加载模块，则可以执行官方指导中的`$ make clean & rm -r “$PWD/modules”`,否则只执行make clean即可。
 
 
-### 简单的使用方法
-以下方法比较简单，但我使用的是其他方法，所以不保证此部分的可行性  
-确保 WSL2 使用自定义内核和模块，方法是修改 .wslconfig 文件（或使用 WSL 设置）。
+### 使用方法
+方法一： 
+“开始”——“WSL settings”——“开发者”，将自定义内核和自定义内核模块的路径设置为你存放导出的镜像文件和模块文件的路径。 
+卸载当前的linux子系统分发版，再重装分发版。或直接运行`wsl --install -d Ubuntu`
 
+方法二： 
+修改 .wslconfig 文件（或使用 WSL 设置）。
 ```
 [wsl2]
 kernel=<your kernel path>
