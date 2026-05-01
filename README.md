@@ -1,9 +1,13 @@
 # wsl2-linuxkernel-arm-build can running waydroid
-#### WSL2（ARM）编译可运行waydroid的WSL2（ARM）内核
-构建环境：
-CPU：高通8cX Gen3
-编译系统环境：Windows 11 on Arm 25H2，WSL2 Ubuntu 24.04 
-注意：本流程为原生ARM下的非交叉编译流程。 
+## WSL2（ARM）编译可运行waydroid的WSL2（ARM）内核
+#### 安全警告：在使用前请注意其上游项目（特别是Linux Kernel）的安全性，并采取相关措施。本仓库只进行了基于其fork的构建编译工作，不对安全性进行负责。
+相关信息：
+https://github.com/microsoft/WSL/issues/40365 ：CVE-2026-31431 (Copy Fail - Linux kernel bug
+
+### 构建环境：
+CPU：高通8cX Gen3  
+编译系统环境：Windows 11 on Arm 25H2，WSL2，Ubuntu 24.04，kernel ver：6.18.20.1。 
+注意：本流程为原生ARM下的非交叉编译流程。  
 
 编译内核的版本：`WSL2-Linux-Kernel-linux-msft-wsl-6.18.20.1` 
 架构：ARM64 
