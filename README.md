@@ -75,6 +75,16 @@ kernelModules=< your vhdx path>
 ```
 详见：[ Waydroid in WSL2 with sound](https://gist.github.com/onomatopellan/c5220c0efddaff69aaff77cca80b7b8e)
 
+### 关于在x64设备上进行交叉编译：
+```
+sudo apt install gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu
+
+make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- \
+     KCONFIG_CONFIG=Microsoft/config-wsl-arm64 -j$(nproc) && \
+make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- \
+     INSTALL_MOD_PATH="$PWD/modules" modules_install
+
+```
 
 
 ### 参考：
